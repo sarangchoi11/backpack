@@ -1,3 +1,3 @@
-책가방 MVP를 위한 레포입니다
+책가방의 repository!
 
-poetry를 install 해주세용
+install poetry

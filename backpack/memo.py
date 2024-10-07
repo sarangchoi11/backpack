@@ -38,7 +38,7 @@ def save_and_clear_memo():
         st.session_state.memo_input = ""
         st.success("메모가 저장되었습니다.", icon="✅")
     else:
-        st.warning("책을 선택하고 메모를 작성해주세요.", icon="🚨")
+        st.warning("메모를 작성해주세요.", icon="🚨")
 
 # Initialize the memos.csv file
 memo_filename = 'memos.csv'
@@ -52,11 +52,16 @@ if not os.path.exists('books.csv'):
 else:
     df = pd.read_csv('books.csv')
 
-# Load books titles
+# Load book titles
 book_titles = load_book_titles('books.csv')
 
 # Load past memos
 memos_df = load_memos('memos.csv')
+
+# Get the 5 most recent books with memos
+memos_df['created_at'] = pd.to_datetime(memos_df['created_at'])
+recent_books = memos_df.sort_values('created_at', ascending=False)['book_id'].unique()[:5]
+selectbox_options = ['모든 책'] + list(recent_books)
 
 # Book selection
 book_select = st.selectbox("어떤 책을 위한 메모인가요?", book_titles, key="selected_book")
@@ -89,7 +94,7 @@ st.button("메모 저장", on_click=save_and_clear_memo)
 # Display saved memos
 st.subheader("저장된 메모 보기 🗃️")
 
-selected_book_for_display = st.selectbox("어떤 책의 메모를 보시겠습니까?", ['모든 책'] + book_titles)
+selected_book_for_display = st.selectbox("어떤 책의 메모를 보시겠습니까?", selectbox_options)
 
 if selected_book_for_display == '모든 책':
     display_memos = memos_df
@@ -104,3 +109,4 @@ if not display_memos.empty:
         st.text("---")
 else:
     st.info("선택한 책에 대한 메모가 없습니다.")
+
